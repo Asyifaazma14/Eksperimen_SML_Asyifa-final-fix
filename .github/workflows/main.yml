@@ -24,13 +24,33 @@ jobs:
           python -m pip install --upgrade pip
           pip install pandas scikit-learn
 
-      - name: Run preprocessing script
-        working-directory: Eksperimen_SML_Asyifa/preprocessing/preprocessing
+      - name: Show repo structure (debug)
         run: |
-          python final_automate_asyifa.py
+          pwd
+          ls -la
+          ls -la Eksperimen_SML_Asyifa || true
+          ls -la Eksperimen_SML_Asyifa/preprocessing || true
+          ls -la Eksperimen_SML_Asyifa/preprocessing/preprocessing || true
+
+      - name: Run preprocessing script (auto-detect path)
+        run: |
+          if [ -f "Eksperimen_SML_Asyifa/preprocessing/preprocessing/final_automate_asyifa.py" ]; then
+            cd Eksperimen_SML_Asyifa/preprocessing/preprocessing
+            python final_automate_asyifa.py
+          elif [ -f "Eksperimen_SML_Asyifa/preprocessing/final_automate_asyifa.py" ]; then
+            cd Eksperimen_SML_Asyifa/preprocessing
+            python final_automate_asyifa.py
+          else
+            echo "ERROR: final_automate_asyifa.py tidak ditemukan di path yang diharapkan."
+            echo "Cari file python yang ada:"
+            find . -maxdepth 5 -type f -name "*automate*.py" -print
+            exit 1
+          fi
 
       - name: Upload preprocessing outputs
         uses: actions/upload-artifact@v4
         with:
           name: preprocessing-outputs
-          path: Eksperimen_SML_Asyifa/preprocessing/preprocessing/namadataset_preprocessing/
+          path: |
+            Eksperimen_SML_Asyifa/preprocessing/namadataset_preprocessing/
+            Eksperimen_SML_Asyifa/preprocessing/preprocessing/namadataset_preprocessing/
