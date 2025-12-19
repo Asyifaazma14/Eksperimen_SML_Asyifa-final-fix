@@ -1,0 +1,36 @@
+name: Preprocessing Data Automation
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  preprocessing:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas scikit-learn
+
+      - name: Run preprocessing script
+        working-directory: Eksperimen_SML_Asyifa/preprocessing/preprocessing
+        run: |
+          python final_automate_asyifa.py
+
+      - name: Upload preprocessing outputs
+        uses: actions/upload-artifact@v3
+        with:
+          name: preprocessing-outputs
+          path: Eksperimen_SML_Asyifa/preprocessing/preprocessing/namadataset_preprocessing/
